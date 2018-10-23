@@ -8,6 +8,8 @@
     <modules>
         <module>exeframe-elastic-common</module>
         <module>exeframe-elastic-vm</module>
+        <module>exeframe-elastic-tf</module>
+        <module>exeframe-elastic-bp</module>
     </modules>
     <name>${project.artifactId}</name>
     <description>支持分布式调用的exeframe</description>
