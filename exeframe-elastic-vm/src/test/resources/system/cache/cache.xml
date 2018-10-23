@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="gb2312"?>
+<caches>
+
+    <quartz>
+        <!--线程池-->
+        <property name="org.quartz.threadPool.class" value="org.quartz.simpl.SimpleThreadPool"/>
+        <property name="org.quartz.threadPool.threadCount" value="3"/>
+        <property name="org.quartz.threadPool.threadPriority" value="5"/>
+        <property name="org.quartz.threadPool.makeThreadsDaemons" value="true"/>
+
+        <!--scheduler-->
+        <property name="org.quartz.scheduler.instanceName" value="CacheScheduler"/>
+        <property name="org.quartz.scheduler.makeSchedulerThreadDaemon" value="true"/>
+
+        <!--JobStore-->
+        <property name="org.quartz.jobStore.misfireThreshold" value="60000"/>
+        <property name="org.quartz.jobStore.class" value="org.quartz.simpl.RAMJobStore"/>
+    </quartz>
+
+    <!--默认都是需要init的-->
+    <!--方法中心-->
+    <cache id="com.ai.appframe2.complex.cache.impl.MethodCenterCacheImpl"/>
+
+    <!--主机和数据库时隙,每天凌晨2点刷新-->
+    <cache id="com.ai.appframe2.complex.cache.impl.SysDateCacheImpl">
+        <property name="cronExpression" value="0 0 0/20 * * ?"/>
+    </cache>
+
+    <!-- -->
+    <cache id="com.asiainfo.appframe.ext.exeframe.his.cache.CfgHisSplitCacheImpl" init="true">
+        <property name="cronExpression" value="0 7 2 * * ?"/>
+    </cache>
+
+    <!--分表关系-->
+    <cache id="com.ai.appframe2.complex.cache.impl.TableSplitCacheImpl"/>
+
+    <!--分表映射关系-->
+    <cache id="com.ai.appframe2.complex.cache.impl.TableSplitFunctionCacheImpl"/>
+
+    <!--分表函数关系-->
+    <cache id="com.ai.appframe2.complex.cache.impl.TableSplitMappingCacheImpl"/>
+
+    <!--IdGenerator-->
+    <cache id="com.ai.appframe2.complex.cache.impl.IdGeneratorCacheImpl"/>
+
+
+    <!--IdGeneratorWrapper-->
+    <cache id="com.ai.appframe2.complex.cache.impl.IdGeneratorWrapperCacheImpl"/>
+
+    <!--BatchIdGenerator关系-->
+    <cache id="com.ai.appframe2.complex.cache.impl.BatchIdGeneratorCacheImpl"/>
+    <!-- ftp -->
+    <cache id="com.ai.common.cache.BsFtpPathCacheImpl"/>
+    <cache id="com.ai.common.cache.BsFtpCacheImpl"/>
+
+    <!--bo模糊化-->
+    <cache id="com.ai.appframe2.complex.cache.impl.BOMaskCacheImpl" init="false"/>
+
+    <!--ws-->
+    <cache id="com.asiainfo.appframe.ext.exeframe.ws.client.cache.WsClientCacheImpl"/>
+    <!--http client cache-->
+    <cache id="com.asiainfo.appframe.ext.exeframe.http.client.cache.HttpClientCacheImpl"/>
+    <!--java侧的国际化资源-->
+    <cache id="com.ai.common.cache.JavaI18nResourceCacheImpl" init="true"/>
+
+    <!--静态数据配置-->
+    <cache id="com.ai.common.cache.StaticDataCacheImpl" init="true">
+        <property name="cronExpression" value="0 15 2 * * ?"/>
+    </cache>
+
+    <!--comframe缓存-->
+    <cache id="com.ai.comframe.cache.VmQueueConfigCacheImpl" init="true">
+        <property name="cronExpression" value="0 30 2 * * ?"/>
+    </cache>
+
+    <!--comframe30配置-->
+    <cache id="com.ai.comframe.cache.VmTemplateCacheImpl" init="true">
+        <property name="cronExpression" value="0 31 2 * * ?"/>
+    </cache>
+
+    <!--comframe30配置-->
+    <cache id="com.ai.comframe.cache.VmAlarmConfigCacheImpl" init="false">
+        <property name="cronExpression" value="0 32 2 * * ?"/>
+    </cache>
+
+    <!--comframe30配置-->
+    <cache id="com.ai.comframe.cache.VmHoliDayCacheImpl" init="false">
+        <property name="cronExpression" value="0 33 2 * * ?"/>
+    </cache>
+
+    <!--comframe30配置-->
+    <cache id="com.ai.comframe.cache.VmTemplateVersionCacheImpl" init="false">
+        <property name="cronExpression" value="0 34 2 * * ?"/>
+    </cache>
+
+    <cache id="com.ai.common.cache.BsCenterCacheImpl" init="true">
+        <property name="cronExpression" value="0 37 2 * * ?"/>
+    </cache>
+
+    <cache id="com.ai.common.cache.BsParaDetailCacheImpl" init="false">
+        <property name="cronExpression" value="0 0/5 * * * ?"/>
+    </cache>
+
+    <cache id="com.asiainfo.appframe.ext.exeframe.ws.client.cache.WsClientCacheControlImpl" init="false"/>
+</caches>

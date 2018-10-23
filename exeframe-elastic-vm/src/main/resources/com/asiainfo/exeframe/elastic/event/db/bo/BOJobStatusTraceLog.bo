@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sysbolist>
+  <sysbo datasource="op" name="BOJobStatusTraceLog" mainattr="ID">
+    <mapingenty type="table">TABLE_JOB_STATUS_TRACE_LOG</mapingenty>
+    <datafilter />
+    <attrlist>
+      <attr floatlength="0" name="ID" maxlength="40" datatype="String" type="PK">
+        <mapingcol datatype="VARCHAR2">ID</mapingcol>
+      </attr>
+      <attr floatlength="0" name="JOB_NAME" maxlength="100" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">JOB_NAME</mapingcol>
+      </attr>
+      <attr floatlength="0" name="ORIGINAL_TASK_ID" maxlength="255" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">ORIGINAL_TASK_ID</mapingcol>
+      </attr>
+      <attr floatlength="0" name="TASK_ID" maxlength="255" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">TASK_ID</mapingcol>
+      </attr>
+      <attr floatlength="0" name="SLAVE_ID" maxlength="50" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">SLAVE_ID</mapingcol>
+      </attr>
+      <attr floatlength="0" name="SOURCE" maxlength="50" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">SOURCE</mapingcol>
+      </attr>
+      <attr floatlength="0" name="EXECUTION_TYPE" maxlength="20" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">EXECUTION_TYPE</mapingcol>
+      </attr>
+      <attr floatlength="0" name="SHARDING_ITEM" maxlength="100" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">SHARDING_ITEM</mapingcol>
+      </attr>
+      <attr floatlength="0" name="STATE" maxlength="20" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">STATE</mapingcol>
+      </attr>
+      <attr floatlength="0" name="MESSAGE" maxlength="4000" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">MESSAGE</mapingcol>
+      </attr>
+      <attr floatlength="0" name="CREATION_TIME" maxlength="20" datatype="DateTime" type="COL">
+        <mapingcol datatype="TIMESTAMP(6)">CREATION_TIME</mapingcol>
+      </attr>
+    </attrlist>
+    <relationlist />
+    <oplist />
+  </sysbo>
+</sysbolist>

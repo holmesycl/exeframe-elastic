@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sysbolist>
+  <sysbo datasource="op" name="BOJobExecutionLog" mainattr="ID">
+    <mapingenty type="table">TABLE_JOB_EXECUTION_LOG</mapingenty>
+    <datafilter />
+    <attrlist>
+      <attr floatlength="0" name="ID" maxlength="40" datatype="String" type="PK">
+        <mapingcol datatype="VARCHAR2">ID</mapingcol>
+      </attr>
+      <attr floatlength="0" name="JOB_NAME" maxlength="100" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">JOB_NAME</mapingcol>
+      </attr>
+      <attr floatlength="0" name="TASK_ID" maxlength="255" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">TASK_ID</mapingcol>
+      </attr>
+      <attr floatlength="0" name="HOSTNAME" maxlength="255" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">HOSTNAME</mapingcol>
+      </attr>
+      <attr floatlength="0" name="IP" maxlength="50" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">IP</mapingcol>
+      </attr>
+      <attr floatlength="0" name="SHARDING_ITEM" maxlength="20" datatype="Long" type="COL">
+        <mapingcol datatype="NUMBER">SHARDING_ITEM</mapingcol>
+      </attr>
+      <attr floatlength="0" name="EXECUTION_SOURCE" maxlength="20" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">EXECUTION_SOURCE</mapingcol>
+      </attr>
+      <attr floatlength="0" name="FAILURE_CAUSE" maxlength="4000" datatype="String" type="COL">
+        <mapingcol datatype="VARCHAR2">FAILURE_CAUSE</mapingcol>
+      </attr>
+      <attr floatlength="0" name="IS_SUCCESS" maxlength="20" datatype="Long" type="COL">
+        <mapingcol datatype="NUMBER">IS_SUCCESS</mapingcol>
+      </attr>
+      <attr floatlength="0" name="START_TIME" maxlength="20" datatype="DateTime" type="COL">
+        <mapingcol datatype="TIMESTAMP(6)">START_TIME</mapingcol>
+      </attr>
+      <attr floatlength="0" name="COMPLETE_TIME" maxlength="20" datatype="DateTime" type="COL">
+        <mapingcol datatype="TIMESTAMP(6)">COMPLETE_TIME</mapingcol>
+      </attr>
+    </attrlist>
+    <relationlist />
+    <oplist />
+  </sysbo>
+</sysbolist>

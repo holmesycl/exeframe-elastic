@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="GB2312"?>
+
+<defaults>
+    <center>
+        <property name="BillId:KeyNum" value="com.ai.common.center.BillIdCenterImpl" />
+        <property name="UserId" value="com.ai.common.center.UserIdCenterImpl" />
+        <property name="RegionId" value="com.ai.common.center.RegionIdCenterImpl" />
+        <property name="OrderCode" value="com.ai.common.center.OrderCodeCenterImpl" />
+        <property name="OrderId" value="com.ai.common.center.OrderIdCenterImpl" />
+        <property name="VpmnGroupId" value="com.ai.common.center.VpmnGroupIdCenterImpl" />
+    </center>
+    <!--默认代理调用方式.默认采用pojo的模式进行调用，采用的实现类为配置的实现类-->
+    <proxy invoke="pojo" type="primitive">
+        <clazz name="com.ai.appframe2.complex.service.impl.LocalServiceInvokeImpl"/>
+    </proxy>
+    <!--默认事务信息.默认采用Required的方式进行事务操作，采用的实现类为配置的实现类-->
+    <transaction type="Required">
+        <clazz name="com.ai.appframe2.complex.transaction.impl.LocalMutilTransactionImpl"/>
+        <mapping>
+            <property name="com.ai.order.data.base" value="om"/>
+            <property name="com.ai.order.data.party" value="op"/>
+            <property name="com.ai.order.data.gbord" value="bboss2"/>
+            <property name="com.ai.order.data.so" value="od{CENTER}"/>
+            <!--平台自带-->
+            <property name="com.ai.appframe2.complex.self.dao.base" value="om"/>
+            <property name="com.ai.appframe2.complex.self.service.check" value="om"/>
+            <property name="com.asiainfo.appframe.ext.exeframe" value="om" />
+            <property name="com.ai.common" value="om" />
+            <property name="com.ai.secframe" value="sec"/>
+            <property name="com.ai.comframe.config" value="om" />
+            <property name="com.ai.comframe.client" value="om" />
+            <property name="com.ai.comframe.autoform" value="om" />
+            <property name="com.ai.aif.comframe" value="om" />
+
+           <!-- <property name="com.ai.order.data.bosscd" value="bosscd"/>-->
+            <!--CSF_DB jar包数据防蚊层-->
+            <property name="com.ai.aif.csf" value="csf"/>
+
+            <property name="com.asiainfo.elastic.event.db" value="op"/>
+        </mapping>
+    </transaction>
+    <datasource>
+        <clazz name="com.ai.appframe2.complex.datasource.impl.LocalMutilDataSourceImpl">
+            <property name="tableName" value="cfg_db_acct"/>
+        </clazz>
+        <pool name="om" primary="true">
+            <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+            <property name="url" value="jdbc:oracle:thin:@10.10.149.32:1521:shcrm1" />
+            <property name="username" value="om" />
+            <property name="password" value="{RC2}kxQ8dXSxZjjc" />
+            <property name="initialSize" value="2" />
+            <property name="maxActive" value="4" />
+            <property name="maxIdle" value="2" />
+            <property name="showSql" value="true" />
+            <!-- 开发库  -->
+        </pool>
+        <pool name="op" init="true">
+            <property name="initialSize" value="0"/>
+            <property name="maxActive" value="20"/>
+            <property name="maxIdle" value="20"/>
+            <property name="maxWait" value="2000"/>
+        </pool>
+        <pool name="sec" init="true">
+            <property name="initialSize" value="0"/>
+            <property name="maxActive" value="2"/>
+            <property name="maxIdle" value="2"/>
+            <property name="maxWait" value="2000"/>
+        </pool>
+        <pool name="oc" init="true">
+            <property name="initialSize" value="1"/>
+            <property name="maxActive" value="2"/>
+            <property name="maxIdle" value="4"/>
+            <property name="maxWait" value="2000"/>
+        </pool>
+        <mapping>
+            <!--平台自带-->
+            <property name="com.ai.appframe2.complex.self.dao.base" value="om"/>
+            <property name="com.ai.appframe2.complex.self.service.check" value="om"/>
+            <property name="com.asiainfo.appframe.ext.exeframe" value="om" />
+            <property name="com.ai.common" value="om" />
+            <property name="com.ai.comframe.config" value="om" />
+            <property name="com.ai.comframe.client" value="om" />
+            <property name="com.ai.comframe.autoform" value="om" />
+            <!--secframe-->
+            <property name="com.ai.secframe" value="sec"/>
+            <!--CSF_DB jar包数据防蚊层-->
+            <property name="com.ai.aif.csf" value="csf"/>
+            <property name="com.ai.aif.comframe" value="om" />
+            <property name="com.asiainfo.elastic.event.db" value="op"/>
+        </mapping>
+    </datasource>
+    <!--包含的服务配置文件 -->
+    <!--平台 -->
+    <include type="sv" classpath="system/service/appframe-service.xml" />
+    <include type="sv" classpath="system/service/omframe-service.xml" />
+</defaults>

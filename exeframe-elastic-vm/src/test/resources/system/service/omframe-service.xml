@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="gb2312"?>
+<services>
+    <service id="com.ai.order.data.so.common.service.interfaces.IOrdCommonCreater" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrdCommonCreater"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrdCommonCreaterImpl"/>
+    </service>
+    
+    <service id="com.ai.order.data.so.common.service.interfaces.IOrdPriceCreater" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrdPriceCreater"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrdPriceCreaterImpl"/>
+    </service>
+
+	<service id="com.ai.order.data.so.common.service.interfaces.IOrdOfferCreater" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrdOfferCreater"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrdOfferCreaterImpl"/>
+    </service>
+
+    <service id="com.ai.order.data.so.common.service.interfaces.IOrdOffOrdUserCreater" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrdOffOrdUserCreater"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrdOffOrdUserCreaterImpl"/>
+    </service>
+    
+    <service id="com.ai.order.data.so.common.service.interfaces.IOrdSrvpkgOrdSrvCreater" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrdSrvpkgOrdSrvCreater"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrdSrvpkgOrdSrvCreaterImpl"/>
+    </service>
+
+	<service id="com.ai.order.data.so.common.service.interfaces.IOrdSrvPkgCreater" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrdSrvPkgCreater"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrdSrvPkgCreaterImpl"/>
+    </service>
+
+    <service id="com.ai.order.manage.common.service.interfaces.ISoBusiLogSV" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.ISoBusiLogService"></property>
+        <property name="implClass" value="com.ai.order.component.completed.service.impl.SoBusiLogSVImpl"></property>
+    </service>
+
+	<service id="com.ai.order.manage.common.service.interfaces.IPrjConstSV" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IPrjConst"/>
+        <property name="implClass" value="com.ai.order.manage.common.service.impl.PrjConstSVImpl"/>
+    </service>
+    
+    <service id="com.ai.order.manage.common.service.interfaces.ISoReportSV" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.ISoReportService"></property>
+        <property name="implClass" value="com.ai.order.manage.common.service.impl.SoReportSVImpl"></property>
+    </service>
+
+    <service id="com.ai.order.manage.common.service.interfaces.ISoOrdDepositeSV" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.completed.service.interfaces.ISoOrdDepositeService"></property>
+        <property name="implClass" value="com.ai.order.component.completed.service.impl.SoOrdDepositeSVImpl"></property>
+    </service>
+
+   <service id="com.ai.order.manage.common.service.interfaces.ISoBusiPriceSV" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrderBusiPriceService"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrderBusiPriceSVmpl"/>
+    </service>
+
+    <service id="com.ai.order.data.so.common.service.OrderVmHelperSV" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrderVmHelperSV"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrderVmHelperSVImpl"/>
+    </service>
+    <service id="com.ai.order.component.completed.service.OMWorkflowCommonSV" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.component.completed.service.interfaces.IOMWorkflowCommonSV"/>
+        <property name="implClass" value="com.ai.order.component.completed.service.impl.OMWorkflowCommonSVImpl"/>
+    </service>
+
+    <service id="com.ai.order.component.open.service.interfaces.IBbossSoVMInvokeSV" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.component.open.service.interfaces.IBbossSoVMInvokeSV"/>
+        <property name="implClass" value="com.ai.order.component.open.service.impl.BbossSoVMInvokeSVImpl"/>
+    </service>
+    
+    <service id="com.ai.order.data.so.common.service.OrdOfferCreater" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrdOfferCreater"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrdOfferCreaterImpl"/>
+    </service>
+    
+     <service id="com.ai.order.data.so.common.service.OrdOffOrdUserCreater" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.data.so.common.service.interfaces.IOrdOffOrdUserCreater"/>
+        <property name="implClass" value="com.ai.order.data.so.common.service.impl.OrdOffOrdUserCreaterImpl"/>
+    </service>
+
+    <service id="com.ai.omframe.OrderSaveService" invoke="pojo" type="primitive">
+        <property name="interfaceClass" value="com.ai.order.component.genorder.service.interfaces.IOrderSaveHelperSV"/>
+        <property name="implClass" value="com.ai.order.component.genorder.service.impl.OrderSaveHelperSVImpl"/>
+    </service>
+
+</services>
