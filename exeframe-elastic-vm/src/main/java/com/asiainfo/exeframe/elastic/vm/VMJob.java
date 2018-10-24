@@ -1,4 +1,4 @@
-package com.asiainfo.exeframe.elastic.ext.comframe.job;
+package com.asiainfo.exeframe.elastic.vm;
 
 import com.ai.appframe2.complex.center.CenterFactory;
 import com.ai.appframe2.service.ServiceFactory;
@@ -9,15 +9,17 @@ import com.ai.comframe.utils.DataSourceUtil;
 import com.ai.comframe.utils.WrapPropertiesUtil;
 import com.ai.comframe.vm.workflow.ivalues.IBOVmScheduleValue;
 import com.ai.common.util.CenterUtil;
+import com.asiainfo.exeframe.elastic.config.vm.VMParam;
 import io.elasticjob.lite.api.ShardingContext;
 import io.elasticjob.lite.api.dataflow.DataflowJob;
+import io.elasticjob.lite.util.json.GsonFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 @Slf4j
-public class VMScheduleJob implements DataflowJob<IBOVmScheduleValue> {
+public class VMJob implements DataflowJob<IBOVmScheduleValue> {
 
     /**
      * 获取待处理数据.
@@ -29,15 +31,11 @@ public class VMScheduleJob implements DataflowJob<IBOVmScheduleValue> {
     public List<IBOVmScheduleValue> fetchData(ShardingContext shardingContext) {
         int totalCount = shardingContext.getShardingTotalCount();
         int item = shardingContext.getShardingItem();
-        String jobName = shardingContext.getJobName();
-        String[] args = jobName.split("#");
-        String queueId = args[0];
-        String queueType = args[1];
-        IVmQueueConfigSV configsv = (IVmQueueConfigSV) ServiceFactory.getService(IVmQueueConfigSV.class);
+        VMParam vmParam = GsonFactory.getGson().fromJson(shardingContext.getJobParameter(), VMParam.class);
+        String queueId = vmParam.getQueueId();
+        String queueType = vmParam.getQueueType();
+        int fetchNum = vmParam.getFetchNum();
         try {
-            IBOVmQueueConfigValue queueConfig = configsv.getVmQueueConfig(queueId, queueType);
-            int fetchNum = queueConfig.getFetchNum();
-
             IQueueProcessor processor = getQueueProcessor(queueType);
             boolean isPushDataSource = false;
             try {

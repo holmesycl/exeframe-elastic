@@ -27,6 +27,13 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.23</version>
+        </dependency>
+
         <!--ai的核心jar的jar -->
         <dependency>
             <groupId>asiainfo</groupId>

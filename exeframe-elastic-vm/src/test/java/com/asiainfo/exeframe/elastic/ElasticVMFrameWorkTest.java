@@ -1,21 +1,19 @@
 package com.asiainfo.exeframe.elastic;
 
-import com.asiainfo.exeframe.elastic.ext.comframe.queue.ElasticQueueFrameWork;
+import com.asiainfo.exeframe.elastic.vm.ElasticVMFrameWork;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-public class ElasticQueueFrameWorkTest {
+public class ElasticVMFrameWorkTest {
 
     @Test
     public void testMain(){
-        String[] args = new String[]{"-q", "ORD_R", "-t", "workflow"};
-        ElasticQueueFrameWork.main(args);
+        ElasticVMFrameWork.main(null);
         try {
             TimeUnit.DAYS.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
 }
