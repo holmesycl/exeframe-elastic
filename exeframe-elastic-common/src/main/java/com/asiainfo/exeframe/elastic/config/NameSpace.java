@@ -10,7 +10,7 @@ import lombok.NonNull;
 public class NameSpace {
 
     private static final String PREFIX = "elastic";
-    private static final String HYPHEN = "-";
+    private static final String HYPHEN = "~";
 
     @NonNull
     private String whoami;
