@@ -7,7 +7,7 @@ import com.google.common.base.Joiner;
 public class VMJobName extends JobName {
 
     public VMJobName(VMParam vmParam) {
-        setName(Joiner.on("~").join(vmParam.getQueueId(), vmParam.getQueueType()));
+        setName(Joiner.on("~").join("vm", vmParam.getQueueId().toLowerCase(), vmParam.getQueueType()));
     }
 
 }
