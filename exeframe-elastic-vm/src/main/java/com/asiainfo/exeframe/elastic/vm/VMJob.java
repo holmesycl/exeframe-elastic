@@ -1,9 +1,6 @@
 package com.asiainfo.exeframe.elastic.vm;
 
 import com.ai.appframe2.complex.center.CenterFactory;
-import com.ai.appframe2.service.ServiceFactory;
-import com.ai.comframe.config.ivalues.IBOVmQueueConfigValue;
-import com.ai.comframe.config.service.interfaces.IVmQueueConfigSV;
 import com.ai.comframe.queue.*;
 import com.ai.comframe.utils.DataSourceUtil;
 import com.ai.comframe.utils.WrapPropertiesUtil;
@@ -21,6 +18,10 @@ import java.util.List;
 @Slf4j
 public class VMJob implements DataflowJob<IBOVmScheduleValue> {
 
+    private VMParam vmParam;
+
+    private IQueueProcessor processor;
+
     /**
      * 获取待处理数据.
      *
@@ -31,37 +32,19 @@ public class VMJob implements DataflowJob<IBOVmScheduleValue> {
     public List<IBOVmScheduleValue> fetchData(ShardingContext shardingContext) {
         int totalCount = shardingContext.getShardingTotalCount();
         int item = shardingContext.getShardingItem();
-        VMParam vmParam = GsonFactory.getGson().fromJson(shardingContext.getJobParameter(), VMParam.class);
-        String queueId = vmParam.getQueueId();
-        String queueType = vmParam.getQueueType();
-        int fetchNum = vmParam.getFetchNum();
+        
+        this.vmParam = GsonFactory.getGson().fromJson(shardingContext.getJobParameter(), VMParam.class);
+        this.processor = getQueueProcessor(vmParam.getQueueType());
+
         try {
-            IQueueProcessor processor = getQueueProcessor(queueType);
             boolean isPushDataSource = false;
             try {
                 try {
-                    isPushDataSource = DataSourceUtil.pushDataSourcebyQueueId(queueId);
+                    isPushDataSource = DataSourceUtil.pushDataSourcebyQueueId(vmParam.getQueueId());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                List queryList = null;
-                try {
-                    queryList = processor.queryTask(queueId, totalCount, item, fetchNum);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (queryList != null && queryList.size() > 0) {
-                    for (int i = 0; i < queryList.size(); ++i) {
-                        try {
-                            IBOVmScheduleValue schedule = (IBOVmScheduleValue) queryList.get(i);
-                            // 设置中心
-                            CenterFactory.setCenterInfoByTypeAndValue(CenterUtil.REGION_ID, schedule.getRegionId());
-                            processor.execute(schedule);
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                return processor.queryTask(vmParam.getQueueId(), totalCount, item, vmParam.getFetchNum());
             } finally {
                 if (isPushDataSource) {
                     try {
@@ -120,6 +103,15 @@ public class VMJob implements DataflowJob<IBOVmScheduleValue> {
      */
     @Override
     public void processData(ShardingContext shardingContext, List<IBOVmScheduleValue> data) {
-
+        for (int i = 0; i < data.size(); ++i) {
+            try {
+                IBOVmScheduleValue schedule = (IBOVmScheduleValue) data.get(i);
+                CenterFactory.setCenterInfoByTypeAndValue(CenterUtil.REGION_ID, schedule.getRegionId());
+                processor.execute(schedule);
+                CenterFactory.setCenterInfoEmpty();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
