@@ -6,10 +6,10 @@ import com.ai.comframe.utils.DataSourceUtil;
 import com.ai.comframe.utils.WrapPropertiesUtil;
 import com.ai.comframe.vm.workflow.ivalues.IBOVmScheduleValue;
 import com.ai.common.util.CenterUtil;
+import com.asiainfo.exeframe.elastic.AbstractElasticJob;
 import com.asiainfo.exeframe.elastic.config.vm.VMParam;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import io.elasticjob.lite.api.ShardingContext;
-import io.elasticjob.lite.api.dataflow.DataflowJob;
-import io.elasticjob.lite.executor.StreamingProcessFilter;
 import io.elasticjob.lite.util.json.GsonFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,13 +17,15 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 
 @Slf4j
-public class VMJob implements DataflowJob<IBOVmScheduleValue>, StreamingProcessFilter {
+public class VMJob extends AbstractElasticJob<IBOVmScheduleValue, Boolean> {
 
     private VMParam vmParam;
 
     private IQueueProcessor processor;
 
     private boolean isPushDataSource = false;
+
+    private ListeningExecutorService executorService;
 
     /**
      * 获取待处理数据.
@@ -39,6 +41,47 @@ public class VMJob implements DataflowJob<IBOVmScheduleValue>, StreamingProcessF
             return processor.queryTask(vmParam.getQueueId(), totalCount, item, vmParam.getFetchNum());
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void beforeProcessData(ShardingContext shardingContext, IBOVmScheduleValue item) throws Throwable {
+        super.beforeProcessData(shardingContext, item);
+        CenterFactory.setCenterInfoByTypeAndValue(CenterUtil.REGION_ID, item.getRegionId());
+    }
+
+    @Override
+    public Boolean processData(ShardingContext shardingContext, IBOVmScheduleValue item) throws Throwable {
+        return processor.execute(item);
+    }
+
+    @Override
+    public void returnProcessData(ShardingContext shardingContext, IBOVmScheduleValue item) {
+        super.returnProcessData(shardingContext, item);
+        CenterFactory.setCenterInfoEmpty();
+    }
+
+    @Override
+    public void beforeStreamingProcess(ShardingContext shardingContext) {
+        super.beforeStreamingProcess(shardingContext);
+        this.vmParam = GsonFactory.getGson().fromJson(shardingContext.getJobParameter(), VMParam.class);
+        this.processor = getQueueProcessor(vmParam.getQueueType());
+        try {
+            isPushDataSource = DataSourceUtil.pushDataSourcebyQueueId(this.vmParam.getQueueId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void afterStreamingProcess(ShardingContext shardingContext, int processDataSize) {
+        super.afterStreamingProcess(shardingContext, processDataSize);
+        if (isPushDataSource) {
+            try {
+                DataSourceUtil.popDataSource();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -73,49 +116,6 @@ public class VMJob implements DataflowJob<IBOVmScheduleValue>, StreamingProcessF
             }
         } catch (Throwable e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * 处理数据.
-     *
-     * @param shardingContext 分片上下文
-     * @param data            待处理数据集合
-     */
-    @Override
-    public void processData(ShardingContext shardingContext, List<IBOVmScheduleValue> data) {
-        for (int i = 0; i < data.size(); ++i) {
-            try {
-                IBOVmScheduleValue schedule = data.get(i);
-                CenterFactory.setCenterInfoByTypeAndValue(CenterUtil.REGION_ID, schedule.getRegionId());
-                processor.execute(schedule);
-            } catch (Throwable e) {
-                log.error("工作流处理失败。", e);
-            } finally {
-                CenterFactory.setCenterInfoEmpty();
-            }
-        }
-    }
-
-    @Override
-    public void beforeStreamingProcess(ShardingContext shardingContext) {
-        this.vmParam = GsonFactory.getGson().fromJson(shardingContext.getJobParameter(), VMParam.class);
-        this.processor = getQueueProcessor(vmParam.getQueueType());
-        try {
-            isPushDataSource = DataSourceUtil.pushDataSourcebyQueueId(this.vmParam.getQueueId());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void afterStreamingProcess(ShardingContext shardingContext, int processDataSize) {
-        if (isPushDataSource) {
-            try {
-                DataSourceUtil.popDataSource();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }
