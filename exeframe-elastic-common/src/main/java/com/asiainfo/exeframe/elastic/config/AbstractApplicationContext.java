@@ -2,6 +2,7 @@ package com.asiainfo.exeframe.elastic.config;
 
 import com.asiainfo.exeframe.elastic.config.reader.YamlReader;
 import com.google.common.io.Resources;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.net.URL;
@@ -15,16 +16,15 @@ public abstract class AbstractApplicationContext {
     @Getter
     private String defaultZkconnectString;
 
-    public AbstractApplicationContext(String location) {
-        URL url = Resources.getResource(location);
+    @Getter(value = AccessLevel.PROTECTED)
+    private List<ProcessDefinition> processDefinitions;
+
+    public AbstractApplicationContext(String fileName) {
+        URL url = Resources.getResource(fileName);
         YamlReader yamlReader = new YamlReader(url);
         yamlReader.loadConfig();
-        ConfigRegistry configRegistry = yamlReader.getConfigRegistry();
-        this.whoami = configRegistry.getWhoami();
-        this.defaultZkconnectString = configRegistry.getDefaultZkconnectString();
-        initProcessDefinition(configRegistry.getProcessDefinitions());
+        this.whoami = yamlReader.getConfigRegistry().getWhoami();
+        this.defaultZkconnectString = yamlReader.getConfigRegistry().getDefaultZkconnectString();
+        this.processDefinitions = yamlReader.getConfigRegistry().getProcessDefinitions();
     }
-
-    public abstract void initProcessDefinition(List<ProcessDefinition> processDefinitions);
-
 }

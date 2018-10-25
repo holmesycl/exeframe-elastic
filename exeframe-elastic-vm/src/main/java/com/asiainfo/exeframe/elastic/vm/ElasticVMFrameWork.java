@@ -1,5 +1,6 @@
 package com.asiainfo.exeframe.elastic.vm;
 
+import com.asiainfo.exeframe.elastic.ElasticProcessFrameWork;
 import com.asiainfo.exeframe.elastic.config.NameSpace;
 import com.asiainfo.exeframe.elastic.config.vm.VMDefinition;
 import com.asiainfo.exeframe.elastic.config.vm.VMParam;
@@ -15,10 +16,12 @@ import io.elasticjob.lite.util.json.GsonFactory;
 
 import java.util.List;
 
-public class ElasticVMFrameWork {
+public class ElasticVMFrameWork extends ElasticProcessFrameWork {
+
 
     public static void main(String[] args) {
-        VMApplicationContext applicationContext = new VMApplicationContext("elastic-exeframe.yaml");
+        initBootParam(args);
+        VMApplicationContext applicationContext = new VMApplicationContext(getConfigFile(), getBootProcessCodes());
         List<VMDefinition> vmDefinitions = applicationContext.getVmDefinitions();
         for (VMDefinition vmDefinition : vmDefinitions) {
             CoordinatorRegistryCenter registryCenter = createCoordinatorRegistryCenter(applicationContext, vmDefinition);

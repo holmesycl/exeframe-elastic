@@ -4,32 +4,34 @@ import com.asiainfo.exeframe.elastic.config.AbstractApplicationContext;
 import com.asiainfo.exeframe.elastic.config.ProcessDefinition;
 import com.asiainfo.exeframe.elastic.config.ProcessType;
 import com.asiainfo.exeframe.elastic.config.vm.VMDefinition;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class VMApplicationContext extends AbstractApplicationContext {
 
     @Getter
     private List<VMDefinition> vmDefinitions;
 
-    public VMApplicationContext(String location) {
-        super(location);
+    public VMApplicationContext(String configFile) {
+        super(configFile);
+        vmDefinitions = new ArrayList<VMDefinition>();
     }
 
-    @Override
-    public void initProcessDefinition(List<ProcessDefinition> processDefinitions) {
-        if (vmDefinitions == null) {
-            vmDefinitions = new ArrayList<VMDefinition>();
-        }
-        for (ProcessDefinition processDefinition : processDefinitions) {
+    public VMApplicationContext(String configFile, String... bootProcessCodes) {
+        this(configFile);
+        Set<String> bootProcessCodeSets = Sets.newHashSet(bootProcessCodes);
+        for (ProcessDefinition processDefinition : getProcessDefinitions()) {
             if (processDefinition.getProcessType() == ProcessType.VM) {
-                vmDefinitions.add((VMDefinition) processDefinition);
+                VMDefinition vmDefinition = (VMDefinition) processDefinition;
+                if (bootProcessCodeSets.isEmpty() || bootProcessCodeSets.contains(vmDefinition.getVmParam().getQueueId())) {
+                    vmDefinitions.add((VMDefinition) processDefinition);
+                }
             }
         }
-
-
     }
 
 }
