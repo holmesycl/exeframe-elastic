@@ -1,8 +1,0 @@
-whoami: ord
-defaultZkconnectString: 10.9.236.165:2181,10.9.236.166:2181,10.9.236.167:2181
-process:
-  vm:
-    ORD_R:
-      queueType: workflow
-    ORD_B:
-      queueType: workflow

@@ -9,17 +9,18 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class NameSpace {
 
-    private static final String PREFIX = "elastic";
-    private static final String HYPHEN = "~";
+    private static final String PREFIX_NODE = "elastic";
+
+    private static final String SLASH = "/";
 
     @NonNull
-    private String whoami;
+    private String tenant;
 
     @NonNull
     private ProcessType processType;
 
-    public String name() {
-        return Joiner.on(HYPHEN).join(PREFIX, whoami, processType.name().toLowerCase());
+    public String path() {
+        return Joiner.on(SLASH).join(PREFIX_NODE, tenant, processType.name().toLowerCase());
     }
 
 }

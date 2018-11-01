@@ -9,7 +9,7 @@ public class ElasticVMFrameWorkTest {
 
     @Test
     public void testMain() {
-        String[] args = new String[]{"-file", "elastic-exeframe.yaml", "-codes", "ORD_R"};
+        String[] args = new String[]{"ORD_R", "workflow", "ORD_B", "workflow"};
         ElasticVMFrameWork.main(args);
         try {
             TimeUnit.DAYS.sleep(1);

@@ -12,10 +12,10 @@ public class ConfigRegistry {
 
     private String defaultZkconnectString;
 
-    private List<ProcessDefinition> processDefinitions;
+    private List<JobConfig> processDefinitions;
 
     public ConfigRegistry() {
-        processDefinitions = new ArrayList<ProcessDefinition>();
+        processDefinitions = new ArrayList<JobConfig>();
     }
 
 }

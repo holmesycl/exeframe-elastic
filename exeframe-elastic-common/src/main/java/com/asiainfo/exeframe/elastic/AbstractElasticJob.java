@@ -1,121 +1,73 @@
 package com.asiainfo.exeframe.elastic;
 
-import com.google.common.util.concurrent.*;
+import com.asiainfo.exeframe.elastic.config.JobConfig;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.elasticjob.lite.api.ShardingContext;
 import io.elasticjob.lite.api.dataflow.DataflowJob;
 import io.elasticjob.lite.executor.StreamingProcessFilter;
+import io.elasticjob.lite.util.json.GsonFactory;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 
 @Slf4j
-public abstract class AbstractElasticJob<T, V> implements DataflowJob<T>, StreamingProcessFilter {
+public abstract class AbstractElasticJob<T> implements DataflowJob<T>, StreamingProcessFilter {
 
-    private ListeningExecutorService executorService;
+    private ConcurrentLinkedQueue<T> dataQueue;
 
-    public abstract List<T> fetchData(ShardingContext shardingContext);
+    private DataFetcher<T> dataFetcher;
 
-    /**
-     * 开始处理前执行
-     *
-     * @param shardingContext
-     * @param item
-     */
-    public void beforeProcessData(ShardingContext shardingContext, T item) throws Throwable {
+    private DataConsumer<T> dataConsumer;
 
-    }
+    @Getter
+    private JobConfig jobConfig;
 
-    /**
-     * 处理单条数据
-     *
-     * @param shardingContext
-     * @param item
-     * @return
-     */
-    public abstract V processData(ShardingContext shardingContext, T item) throws Throwable;
+    private ListeningExecutorService allotExecutorService;
 
-    /**
-     * 数据处理异常时执行
-     *
-     * @param shardingContext
-     * @param item
-     * @param t
-     */
-    public void exceptionProcessData(ShardingContext shardingContext, T item, Throwable t) {
-        log.error(shardingContext.toString() + " - " + item.toString(), t);
-    }
+    private ListenableFuture listenableFuture;
 
-    /**
-     * 数据处理成功时执行
-     *
-     * @param shardingContext
-     * @param item
-     */
-    public void afterProcessData(ShardingContext shardingContext, T item) {
 
-    }
-
-    /**
-     * 处理返回时执行
-     *
-     * @param shardingContext
-     * @param item
-     */
-    public void returnProcessData(ShardingContext shardingContext, T item) {
-
+    @Override
+    public List<T> fetchData(ShardingContext shardingContext) {
+        int shardingItem = shardingContext.getShardingItem();
+        int shardingTotalCount = shardingContext.getShardingTotalCount();
+        int fetchNum = getJobConfig().getFetchNmu();
+        // 等待数据处理完毕后再继续兜取新的数据
+        // 需要抽象
+        return dataFetcher.fetchData(shardingItem, shardingTotalCount, fetchNum);
     }
 
     @Override
     public void processData(final ShardingContext shardingContext, List<T> items) {
-        final CountDownLatch latch = new CountDownLatch(items.size());
-        for (final T item : items) {
-            ListenableFuture<V> explosion = executorService.submit(new Callable<V>() {
-                @Override
-                public V call() throws Exception {
-                    V v = null;
-                    try {
-                        beforeProcessData(shardingContext, item);
-                        v = processData(shardingContext, item);
-                        afterProcessData(shardingContext, item);
-                    } catch (Throwable t) {
-                        exceptionProcessData(shardingContext, item, t);
-                    } finally {
-                        returnProcessData(shardingContext, item);
-                    }
-                    return v;
-                }
-            });
-            Futures.addCallback(explosion, new FutureCallback<V>() {
-                @Override
-                public void onSuccess(V result) {
-                    latch.countDown();
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    log.error("任务处理失败。", t);
-                    latch.countDown();
-                }
-            });
-        }
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        this.dataQueue.addAll(items);
     }
 
     @Override
     public void beforeStreamingProcess(ShardingContext shardingContext) {
-        int threads = Runtime.getRuntime().availableProcessors() + 1;
-        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threads));
+        this.jobConfig = GsonFactory.getGson().fromJson(shardingContext.getJobParameter(), jobConfigType());
+        this.dataQueue = new ConcurrentLinkedQueue<T>();
+        this.dataFetcher = createDataFetcher();
+        this.dataConsumer = createDataConsumer();
+        this.allotExecutorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+        this.listenableFuture = this.allotExecutorService.submit(new AllotJobDataTask(this.dataQueue));
     }
+
+    protected abstract Class<? extends JobConfig> jobConfigType();
+
+    protected abstract DataConsumer<T> createDataConsumer();
+
+    protected abstract DataFetcher<T> createDataFetcher();
+
 
     @Override
     public void afterStreamingProcess(ShardingContext shardingContext, int processDataSize) {
-        executorService.shutdown();
+        // 数据兜取结束
+        // 清理现场
+        this.allotExecutorService.shutdown();
     }
 }
