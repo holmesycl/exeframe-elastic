@@ -1,9 +1,9 @@
 package com.asiainfo.exeframe.elastic.vm;
 
-import com.asiainfo.exeframe.elastic.AbstractDataConsumerFactory;
 import com.asiainfo.exeframe.elastic.DataConsumer;
+import com.asiainfo.exeframe.elastic.DataConsumerFactory;
 
-public class VMDataConsumerFactory extends AbstractDataConsumerFactory {
+public class VMDataConsumerFactory implements DataConsumerFactory {
 
     private String queueType;
 

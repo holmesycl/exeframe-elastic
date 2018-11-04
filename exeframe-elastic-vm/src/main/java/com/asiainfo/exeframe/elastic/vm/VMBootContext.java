@@ -27,8 +27,6 @@ import java.util.Set;
 @Data
 public class VMBootContext extends BootContext {
 
-    private List<VMElasticJobConfig> vmElasticJobConfigs = new ArrayList<VMElasticJobConfig>();
-
     private VMBootParam vmBootParam;
 
     public VMBootContext(VMBootParam vmBootParam) {
@@ -37,20 +35,11 @@ public class VMBootContext extends BootContext {
     }
 
     @Override
-    public List<ElasticJobConfig> getElasticJobConfigs() {
-        List<ElasticJobConfig> elasticJobConfigs = new ArrayList<>(vmElasticJobConfigs.size());
-        for (final VMElasticJobConfig vmElasticJobConfig :
-                vmElasticJobConfigs) {
-            elasticJobConfigs.add(vmElasticJobConfig);
-        }
-        return elasticJobConfigs;
-    }
-
-    @Override
-    protected void loadConfig(Properties properties) {
+    protected List<ElasticJobConfig> loadConfig(Properties properties) {
         String prefix = Joiner.on(Sign.DOT.mark()).join(getTenant(), ProcessType.VM.name().toLowerCase());
         IVmQueueConfigSV configSV = (IVmQueueConfigSV) ServiceFactory.getService(IVmQueueConfigSV.class);
         Set<VMBootParam.QueueBootParam> queueBootParams = vmBootParam.getQueueBootParams();
+        List<ElasticJobConfig> elasticJobConfigs = new ArrayList<ElasticJobConfig>(queueBootParams.size());
         for (VMBootParam.QueueBootParam queueBootParam :
                 queueBootParams) {
             VMElasticJobConfig vmElasticJobConfig = new VMElasticJobConfig();
@@ -84,7 +73,8 @@ public class VMBootContext extends BootContext {
                 throw new RuntimeException(e);
             }
             vmElasticJobConfig.setJobParameter(GsonFactory.getGson().toJson(vmElasticJobConfig));
-            vmElasticJobConfigs.add(vmElasticJobConfig);
+            elasticJobConfigs.add(vmElasticJobConfig);
         }
+        return elasticJobConfigs;
     }
 }

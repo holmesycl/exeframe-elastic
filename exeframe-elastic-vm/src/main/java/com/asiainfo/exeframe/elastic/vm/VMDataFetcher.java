@@ -1,11 +1,12 @@
 package com.asiainfo.exeframe.elastic.vm;
 
 import com.ai.comframe.queue.IQueueProcessor;
+import com.ai.comframe.utils.DataSourceUtil;
 import com.asiainfo.exeframe.elastic.DataFetcher;
 
 import java.util.List;
 
-public class VMDataFetcher<IBOVmScheduleValue> implements DataFetcher<IBOVmScheduleValue> {
+public class VMDataFetcher<IBOVmScheduleValue> extends DataFetcher<IBOVmScheduleValue> {
 
 
     private IQueueProcessor processor;
@@ -21,11 +22,18 @@ public class VMDataFetcher<IBOVmScheduleValue> implements DataFetcher<IBOVmSched
     }
 
     @Override
-    public List<IBOVmScheduleValue> fetchData(int shardingItem, int shardingTotalCount, int fetchNum) {
+    protected List<IBOVmScheduleValue> fetchData(int shardingTotalCount, int shardingItem, int fetchNmu) {
         try {
-            return processor.queryTask(queueId, shardingTotalCount, shardingItem, fetchNum);
+            DataSourceUtil.pushDataSourcebyQueueId(queueId);
+            return processor.queryTask(queueId, shardingTotalCount, shardingItem, fetchNmu);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                DataSourceUtil.popDataSource();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

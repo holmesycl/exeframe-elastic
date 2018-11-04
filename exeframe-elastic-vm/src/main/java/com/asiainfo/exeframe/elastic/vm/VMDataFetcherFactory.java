@@ -1,9 +1,9 @@
 package com.asiainfo.exeframe.elastic.vm;
 
-import com.asiainfo.exeframe.elastic.AbstractDataFetcherFactory;
+import com.asiainfo.exeframe.elastic.DataFetcherFactory;
 import com.asiainfo.exeframe.elastic.DataFetcher;
 
-public class VMDataFetcherFactory extends AbstractDataFetcherFactory {
+public class VMDataFetcherFactory implements DataFetcherFactory {
 
     private String queueId;
     private String queueType;

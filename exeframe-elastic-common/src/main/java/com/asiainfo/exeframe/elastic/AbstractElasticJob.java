@@ -1,19 +1,18 @@
 package com.asiainfo.exeframe.elastic;
 
-import com.asiainfo.exeframe.elastic.config.JobConfig;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.elasticjob.lite.api.ShardingContext;
 import io.elasticjob.lite.api.dataflow.DataflowJob;
 import io.elasticjob.lite.executor.StreamingProcessFilter;
-import io.elasticjob.lite.util.json.GsonFactory;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public abstract class AbstractElasticJob<T> implements DataflowJob<T>, StreamingProcessFilter {
@@ -22,24 +21,14 @@ public abstract class AbstractElasticJob<T> implements DataflowJob<T>, Streaming
 
     private DataFetcher<T> dataFetcher;
 
-    private DataConsumer<T> dataConsumer;
+    private AtomicBoolean allotJobNeedToEnd = new AtomicBoolean(false);
 
-    @Getter
-    private JobConfig jobConfig;
-
-    private ListeningExecutorService allotExecutorService;
-
-    private ListenableFuture listenableFuture;
+    private ListenableFuture<Integer> listenableFuture;
 
 
     @Override
     public List<T> fetchData(ShardingContext shardingContext) {
-        int shardingItem = shardingContext.getShardingItem();
-        int shardingTotalCount = shardingContext.getShardingTotalCount();
-        int fetchNum = getJobConfig().getFetchNmu();
-        // 等待数据处理完毕后再继续兜取新的数据
-        // 需要抽象
-        return dataFetcher.fetchData(shardingItem, shardingTotalCount, fetchNum);
+        return dataFetcher.fetchData(shardingContext);
     }
 
     @Override
@@ -49,25 +38,28 @@ public abstract class AbstractElasticJob<T> implements DataflowJob<T>, Streaming
 
     @Override
     public void beforeStreamingProcess(ShardingContext shardingContext) {
-        this.jobConfig = GsonFactory.getGson().fromJson(shardingContext.getJobParameter(), jobConfigType());
         this.dataQueue = new ConcurrentLinkedQueue<T>();
-        this.dataFetcher = createDataFetcher();
-        this.dataConsumer = createDataConsumer();
-        this.allotExecutorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
-        this.listenableFuture = this.allotExecutorService.submit(new AllotJobDataTask(this.dataQueue));
+        this.dataFetcher = createDataFetcher(shardingContext);
+        ListeningExecutorService allotExecutorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+        this.listenableFuture = allotExecutorService.submit(new AllotJobDataTask(dataQueue, createDataConsumer(shardingContext), allotJobNeedToEnd));
+        allotExecutorService.shutdown();
     }
 
-    protected abstract Class<? extends JobConfig> jobConfigType();
+    protected abstract DataConsumer<T> createDataConsumer(ShardingContext shardingContext);
 
-    protected abstract DataConsumer<T> createDataConsumer();
-
-    protected abstract DataFetcher<T> createDataFetcher();
-
+    protected abstract DataFetcher<T> createDataFetcher(ShardingContext shardingContext);
 
     @Override
     public void afterStreamingProcess(ShardingContext shardingContext, int processDataSize) {
-        // 数据兜取结束
-        // 清理现场
-        this.allotExecutorService.shutdown();
+        // 通知数据分配任务结束
+        allotJobNeedToEnd.set(true);
+        try {
+            // 等待数据处理结束
+            int dataSize = listenableFuture.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

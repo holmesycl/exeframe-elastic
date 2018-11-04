@@ -9,7 +9,7 @@ public class ElasticVMFrameWorkTest {
 
     @Test
     public void testMain() {
-        String[] args = new String[]{"ORD_R", "workflow", "ORD_B", "workflow"};
+        String[] args = new String[]{"ORD_R", "workflow"};
         ElasticVMFrameWork.main(args);
         try {
             TimeUnit.DAYS.sleep(1);
