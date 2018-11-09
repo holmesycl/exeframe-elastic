@@ -1,21 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.asiainfo.exeframe</groupId>
-    <artifactId>exeframe-elastic</artifactId>
+    <groupId>com.asiainfo.elastic</groupId>
+    <artifactId>batch-framework</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <modules>
-        <module>exeframe-elastic-common</module>
-        <module>exeframe-elastic-vm</module>
-        <module>exeframe-elastic-tf</module>
-        <module>exeframe-elastic-bp</module>
+        <module>elastic-common</module>
+        <module>elastic-vm</module>
+        <module>elastic-tf</module>
+        <module>elastic-bp</module>
     </modules>
     <name>${project.artifactId}</name>
-    <description>支持分布式调用的exeframe</description>
+    <description>分布式批处理任务框架</description>
 
     <properties>
-        <java.version>1.7</java.version>
+        <java.version>1.6</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
 
@@ -27,13 +27,17 @@
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+        <!-- elastic job -->
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.23</version>
+            <groupId>io.elasticjob</groupId>
+            <artifactId>elastic-job-lite-core</artifactId>
+            <version>3.0.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.elasticjob</groupId>
+            <artifactId>elastic-job-lite-schedule-quartz16</artifactId>
+            <version>3.0.1</version>
+        </dependency>
         <!--ai的核心jar的jar -->
         <dependency>
             <groupId>asiainfo</groupId>
@@ -568,18 +572,6 @@
             <artifactId>csf-example-remote-server</artifactId>
             <version>2.1.7</version>
         </dependency>
-        <!-- elastic job -->
-        <dependency>
-            <groupId>io.elasticjob</groupId>
-            <artifactId>elastic-job-lite-core</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.elasticjob</groupId>
-            <artifactId>elastic-job-lite-schedule-quartz16</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
         <dependency>
             <groupId>csf</groupId>
             <artifactId>csf-server</artifactId>
